@@ -1,0 +1,31 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local environment files (never commit secrets)
+.env.local
+.env
+.env.*
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Coverage
+.coverage*
+htmlcov/
+
+# Node (if present)
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+

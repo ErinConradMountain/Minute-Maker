@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Minute Maker — Meeting Minutes Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Auth Modal -->
+      <div id="auth-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+        <div class="modal-card">
+          <h2 id="auth-title">Sign in to Minute Maker</h2>
+          <p class="muted">Create an account or sign in to save templates and minutes.</p>
+          <form id="auth-form" autocomplete="on">
+            <label class="input">
+              <span>Email</span>
+              <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email" />
+            </label>
+            <label class="input">
+              <span>Password</span>
+              <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password" />
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" id="remember" />
+              <span>Remember me on this device</span>
+            </label>
+            <div class="actions">
+              <button type="submit" class="btn primary" id="login-btn">Sign In</button>
+              <button type="button" class="btn ghost" id="close-auth">Continue as guest</button>
+            </div>
+            <p class="fine-print">By continuing you agree to our Terms and Privacy Policy.</p>
+          </form>
+        </div>
+      </div>
+
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo">📝</div>
+          <div class="title">Minute Maker</div>
+        </div>
+        <div class="top-actions">
+          <button id="new-meeting" class="btn small">New Meeting</button>
+          <div class="user" id="user-menu">
+            <span id="user-email" class="muted">Guest</span>
+            <button id="logout" class="btn small ghost">Log out</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Layout -->
+      <div class="layout">
+        <aside class="sidebar">
+          <nav>
+            <div class="nav-section">
+              <div class="nav-title">Workspace</div>
+              <button class="nav-item active" data-view="dashboard">Dashboard</button>
+              <button class="nav-item" data-view="templates">Templates</button>
+              <button class="nav-item" data-view="minutes">Past Minutes</button>
+            </div>
+            <div class="nav-section">
+              <div class="nav-title">Settings</div>
+              <button class="nav-item" data-view="account">Account</button>
+            </div>
+          </nav>
+          <div class="sidebar-footer muted">v0.1 • Local demo</div>
+        </aside>
+
+        <main class="content">
+          <!-- Dashboard View -->
+          <section id="view-dashboard" class="view">
+            <div class="hero">
+              <h1>Turn recordings into structured minutes</h1>
+              <p class="muted">Upload audio or paste a transcript. Pick a template. Get clean, consistent minutes.</p>
+              <div class="hero-actions">
+                <label for="audio-input" class="btn primary">Upload Audio</label>
+                <input id="audio-input" type="file" accept="audio/*" hidden />
+                <button id="paste-transcript" class="btn">Paste Transcript</button>
+                <button id="choose-template" class="btn ghost">Choose Template</button>
+              </div>
+            </div>
+
+            <div class="panel-grid">
+              <div class="panel">
+                <div class="panel-head">
+                  <h3>Selected Template</h3>
+                  <button id="change-template" class="btn small ghost">Change</button>
+                </div>
+                <div id="template-preview" class="template-preview muted">No template selected.</div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-head">
+                  <h3>Transcript</h3>
+                  <button id="clear-transcript" class="btn small ghost">Clear</button>
+                </div>
+                <textarea id="transcript" class="textarea" placeholder="Paste transcript or upload audio to transcribe..."></textarea>
+              </div>
+
+              <div class="panel">
+                <div class="panel-head">
+                  <h3>Preview Minutes</h3>
+                  <button id="generate" class="btn small primary">Generate</button>
+                </div>
+                <div id="minutes-preview" class="minutes"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Templates View -->
+          <section id="view-templates" class="view hidden">
+            <div class="panel">
+              <div class="panel-head">
+                <h3>Templates</h3>
+                <div class="panel-actions">
+                  <label for="template-file" class="btn small">Import Template</label>
+                  <input id="template-file" type="file" accept="application/json,.json,.txt,.md,.docx" hidden />
+                </div>
+              </div>
+              <div class="cards" id="templates-list"></div>
+            </div>
+            <div class="panel">
+              <div class="panel-head">
+                <h3>Create / Edit Template</h3>
+                <button id="save-template" class="btn small primary">Save Template</button>
+              </div>
+              <div class="grid2">
+                <div>
+                  <label class="input"><span>Name</span><input id="tpl-name" placeholder="Template name"/></label>
+                  <label class="input"><span>Description</span><input id="tpl-desc" placeholder="Short description"/></label>
+                  <label class="input"><span>Sections (comma separated)</span><input id="tpl-sections" placeholder="Title, Date/Time, Attendees, Agenda, Decisions, Action Items"/></label>
+                </div>
+                <div>
+                  <label class="input"><span>Prompts (JSON)</span>
+                    <textarea id="tpl-prompts" class="textarea" placeholder='{"Decisions":"Emphasize final choices..."}'></textarea>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Minutes View -->
+          <section id="view-minutes" class="view hidden">
+            <div class="panel">
+              <div class="panel-head">
+                <h3>Past Minutes</h3>
+                <button id="clear-minutes" class="btn small ghost">Clear All</button>
+              </div>
+              <div id="minutes-list" class="list"></div>
+            </div>
+          </section>
+
+          <!-- Account View -->
+          <section id="view-account" class="view hidden">
+            <div class="panel">
+              <div class="panel-head">
+                <h3>Account</h3>
+              </div>
+              <div class="account">
+                <label class="input">
+                  <span>Email</span>
+                  <input type="email" id="account-email" disabled />
+                </label>
+                <label class="input">
+                  <span>Password</span>
+                  <input type="password" id="account-password" placeholder="Update password" />
+                </label>
+                <label class="checkbox">
+                  <input type="checkbox" id="account-remember" />
+                  <span>Stay signed in on this device</span>
+                </label>
+                <div>
+                  <button id="save-account" class="btn primary">Save Settings</button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+  </html>
