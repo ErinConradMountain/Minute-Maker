@@ -8,9 +8,11 @@ from pathlib import Path
 from typing import List, Optional
 
 try:
-    from pydub import AudioSegment
+    from pydub import AudioSegment  # type: ignore
     PYDUB_AVAILABLE = True
 except ImportError:
+    # Provide a placeholder symbol so tests can patch `src.utils.audio_utils.AudioSegment`
+    AudioSegment = None  # type: ignore
     PYDUB_AVAILABLE = False
 
 

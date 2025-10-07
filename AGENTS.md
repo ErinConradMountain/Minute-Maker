@@ -14,7 +14,6 @@ This guide helps contributors work efficiently in this repository.
 - `npm run build` or `python setup.py sdist bdist_wheel` — produce artifacts in `dist/`.
 - `npm test` or `pytest -q` — run unit tests.
 - `npm run lint` or `ruff check .` — lint/format check.
-Use the stack that matches the code you change (Node or Python).
 
 ## Coding Style & Naming Conventions
 - Indentation: 2 spaces (JS/TS), 4 spaces (Python).
@@ -47,7 +46,7 @@ Use the stack that matches the code you change (Node or Python).
   - `WHISPER_API_ENDPOINT` (full base URL if required)
   - Generate sample audio: `python scripts/gen_sample_audio.py assets/sample.wav`
   - Check: `PYTHONPATH=$PWD python scripts/check_whisper.py assets/sample.wav`
-- OpenAI‑compatible mapping: check scripts auto‑map `QWEN_*`/`WHISPER_*` → `OPENAI_*` when needed.
+- OpenAI‑compatible mapping: scripts auto‑map `QWEN_*`/`WHISPER_*` → `OPENAI_*` when needed.
 
 ## Dev Environment Quickstart
 - Install dev deps: `python -m pip install -r requirements-dev.txt`
@@ -58,3 +57,4 @@ Use the stack that matches the code you change (Node or Python).
 ## Agent‑Specific Instructions
 - Respect this guide across the repo tree.
 - Keep changes minimal and focused; update docs/tests alongside code.
+

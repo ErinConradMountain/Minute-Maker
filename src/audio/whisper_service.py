@@ -11,15 +11,19 @@ from pathlib import Path
 import httpx
 
 try:
-    import whisper
+    import whisper  # type: ignore
     WHISPER_AVAILABLE = True
 except ImportError:
+    # Expose a placeholder so tests can patch `src.audio.whisper_service.whisper`
+    whisper = None  # type: ignore
     WHISPER_AVAILABLE = False
 
 try:
-    import openai
+    import openai  # type: ignore
     OPENAI_AVAILABLE = True
 except ImportError:
+    # Expose a placeholder so tests can patch `src.audio.whisper_service.openai`
+    openai = None  # type: ignore
     OPENAI_AVAILABLE = False
 
 from ..utils.audio_utils import validate_audio_file, convert_audio_format
