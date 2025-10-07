@@ -7,8 +7,11 @@ import mimetypes
 from pathlib import Path
 from typing import List, Optional
 
+# Provide placeholder so tests can patch even if import fails
+AudioSegment = None  # type: ignore
+
 try:
-    from pydub import AudioSegment
+    from pydub import AudioSegment  # type: ignore  # noqa: F401
     PYDUB_AVAILABLE = True
 except ImportError:
     PYDUB_AVAILABLE = False

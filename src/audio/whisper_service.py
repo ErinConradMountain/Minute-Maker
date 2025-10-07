@@ -10,16 +10,22 @@ from typing import Optional, Dict, Any
 from pathlib import Path
 import httpx
 
+# Provide safe defaults for optional dependencies so tests can patch them
+whisper = None  # type: ignore
+openai = None  # type: ignore
+
 try:
-    import whisper
+    import whisper  # type: ignore  # noqa: F401  (reassigns above placeholder)
     WHISPER_AVAILABLE = True
 except ImportError:
+    # Leave placeholder value in place so tests can patch attribute
     WHISPER_AVAILABLE = False
 
 try:
-    import openai
+    import openai  # type: ignore  # noqa: F401
     OPENAI_AVAILABLE = True
 except ImportError:
+    # Leave placeholder value in place so tests can patch attribute
     OPENAI_AVAILABLE = False
 
 from ..utils.audio_utils import validate_audio_file, convert_audio_format
