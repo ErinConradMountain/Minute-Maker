@@ -151,28 +151,29 @@ function renderMinutesHistory(){
 
 // Fake API calls (replace with serverless endpoints)
 async function apiTranscribe(file){
-  // In demo, we just return a placeholder string
-  return 'Sample transcript: Discuss project timeline, budget risks, and action items for next sprint.';
+  // Call backend /api/transcribe endpoint (multipart/form-data)
+  const fd = new FormData();
+  fd.append('file', file, file.name);
+
+  const resp = await fetch('/api/transcribe', { method: 'POST', body: fd });
+  if(!resp.ok){
+    const err = await resp.json().catch(()=>({error:'unknown'}));
+    throw new Error(err.error || 'Transcription failed');
+  }
+  const payload = await resp.json();
+  return payload.text || '';
 }
 async function apiGenerateMinutes(transcript, template){
-  // In demo, we emulate a structured response based on the template sections
-  const byKey = (name, text)=> ({title: name, text});
-  const map = {
-    'Title': 'Project Sync — Week 12',
-    'Date/Time': new Date().toLocaleString(),
-    'Attendees': 'A. Smith, B. Lee, C. Patel',
-    'Agenda': ['Timeline update', 'Budget review', 'Risks', 'Next steps'],
-    'Decisions': ['Push release by 1 week', 'Reduce scope of v1'],
-    'Action Items': ['Alice: finalize timeline (Fri)', 'Ben: update budget (Thu)', 'Chris: draft comms (Mon)'],
-    'Risks': ['Vendor delay on API', 'Limited QA bandwidth'],
-    'Next Meeting': 'Next Tue 10:00 AM'
-  };
-  const result = {};
-  template.sections.forEach(s=>{
-    const key = s.toLowerCase().replace(/\s+/g,'_');
-    result[key] = Array.isArray(map[s]) ? map[s] : (map[s] || '');
+  const resp = await fetch('/api/minutes', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ transcript, template })
   });
-  return result;
+  if(!resp.ok){
+    const err = await resp.json().catch(()=>({error:'unknown'}));
+    throw new Error(err.error || 'Minutes generation failed');
+  }
+  return await resp.json();
 }
 
 // Events
