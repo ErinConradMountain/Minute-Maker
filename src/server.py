@@ -6,7 +6,9 @@ from pathlib import Path
 from transcribe import transcribe_audio
 from qwen_minutes import meeting_minutes
 
-app = Flask(__name__)
+# Serve static files from project root so frontend and API run on same host
+BASE_DIR = Path(__file__).resolve().parents[1]
+app = Flask(__name__, static_folder=str(BASE_DIR), static_url_path='')
 
 
 @app.route("/api/transcribe", methods=["POST"])
@@ -51,6 +53,19 @@ def api_minutes():
         return jsonify(minutes)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route('/', defaults={'path': 'index.html'})
+@app.route('/<path:path>')
+def serve_frontend(path):
+    """Serve frontend static files from the repo root (index.html, app.js, styles.css)."""
+    # Security: only serve known static extensions
+    allowed_ext = {'.html', '.js', '.css', '.png', '.svg', '.ico', '.json'}
+    target = BASE_DIR / path
+    if target.exists() and target.suffix in allowed_ext:
+        return app.send_static_file(path)
+    # Fallback to index.html for client-side routing
+    return app.send_static_file('index.html')
 
 
 if __name__ == "__main__":
