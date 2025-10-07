@@ -74,30 +74,30 @@ class WhisperService:
     
     def _setup_openai_client(self):
         """Setup OpenAI client for API-based transcription."""
-            # Try to use a patched or previously imported openai module first
-            global openai, OPENAI_AVAILABLE
-            if openai is None:
-                try:
-                    import openai as _openai  # type: ignore
-                    openai = _openai
-                    OPENAI_AVAILABLE = True
-                except Exception:
-                    OPENAI_AVAILABLE = False
-
-            if not OPENAI_AVAILABLE:
-                raise ImportError("openai package not found. Install with: pip install openai")
-
-            api_key = os.getenv("OPENAI_API_KEY")
-            if not api_key:
-                raise ValueError("OPENAI_API_KEY environment variable not set")
-
-            # Some OpenAI SDKs expose a client; adapt depending on version
+        # Try to use a patched or previously imported openai module first
+        global openai, OPENAI_AVAILABLE
+        if openai is None:
             try:
-                self.openai_client = openai.OpenAI(api_key=api_key)
+                import openai as _openai  # type: ignore
+                openai = _openai
+                OPENAI_AVAILABLE = True
             except Exception:
-                # Fallback: store the module and rely on tests/mocks to provide needed interface
-                self.openai_client = openai
-            logger.info("OpenAI Whisper API client initialized")
+                OPENAI_AVAILABLE = False
+
+        if not OPENAI_AVAILABLE:
+            raise ImportError("openai package not found. Install with: pip install openai")
+
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY environment variable not set")
+
+        # Some OpenAI SDKs expose a client; adapt depending on version
+        try:
+            self.openai_client = openai.OpenAI(api_key=api_key)
+        except Exception:
+            # Fallback: store the module and rely on tests/mocks to provide needed interface
+            self.openai_client = openai
+        logger.info("OpenAI Whisper API client initialized")
 
     def _setup_third_party_client(self):
         """Validate third-party Whisper API configuration."""
